@@ -10,6 +10,7 @@ Secure JWT issuer following CloudForge Identity Contract v1.
 """
 
 import os
+import hmac
 import time
 import base64
 from typing import Any, Optional
@@ -187,7 +188,7 @@ def issue_token(
 
     # 2. Secret must match
     expected_secret = _get_client_secret(client_id)
-    if not expected_secret or client_secret != expected_secret:
+    if not expected_secret or not hmac.compare_digest(client_secret, expected_secret):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid client credentials",
